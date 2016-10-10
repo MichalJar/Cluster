@@ -1,11 +1,11 @@
 package michal.cluster.algorithm
 
-import michal.cluster.model.{Link, Links, Points}
+import michal.cluster.model.{Dist, Link, Links, Points}
 
 /**
   * Created by michal on 04.10.16.
   */
-class FullGraphPrim[Data](points: Points[Data], distance: (Data, Data) => Double) {
+class FullGraphPrim[Data](points: Points[Data], distance: Dist[Data]) {
 
   private val distances = Array.fill(points.size)(Double.MaxValue)
   private val chosenPointIndexes = Array.fill(points.size)(-1)

@@ -1,11 +1,11 @@
 package michal.cluster.algorithm
 
-import michal.cluster.model.{Link, Links, Point, Points}
+import michal.cluster.model._
 
 /**
   * Created by michal on 04.10.16.
   */
-class BiGraphPrim[Data](pointsA: Points[Data], pointsB: Points[Data], distance: (Data, Data) => Double) {
+class BiGraphPrim[Data](pointsA: Points[Data], pointsB: Points[Data], distance: Dist[Data]) {
 
   private val points = pointsA ++ pointsB
   private val distances = Array.fill(points.size)(Double.MaxValue)

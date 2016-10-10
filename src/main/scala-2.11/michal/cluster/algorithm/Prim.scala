@@ -1,17 +1,27 @@
 package michal.cluster.algorithm
 
-import michal.cluster.model.{Link, Links, Point, Points}
+import michal.cluster.model._
 
 /**
   * Created by michal on 02.10.16.
   */
-object Prim {
+class Prim[Data](subGraphNum: Int, distance: Dist[Data]) {
 
-  type Dist[Data] = (Data, Data) => Double
+  def toMSTFrom(association: GraphAssociation,  allPoints: Points[Data]): Links =
+    if(association.aGraphIndex == association.bGraphIndex){
 
-  def getMST[Data](points: Points[Data], distance: Dist[Data]): Links
-  = new FullGraphPrim[Data](points, distance).getMST
+      val neededPoints = PointsGetter.getPointsBy(association.aGraphIndex, subGraphNum, allPoints)
 
-  def getMST[Data](pointsA: IndexedSeq[Point[Data]], pointsB: Points[Data], distance: Dist[Data]): Links
-  = new BiGraphPrim[Data](pointsA, pointsB, distance).getMST
+      val fullPrim = new FullGraphPrim[Data](neededPoints, distance)
+
+      fullPrim.getMST
+    } else {
+
+      val neededPointsA = PointsGetter.getPointsBy(association.aGraphIndex, subGraphNum, allPoints)
+      val neededPointsB = PointsGetter.getPointsBy(association.bGraphIndex, subGraphNum, allPoints)
+
+      val biPrim = new BiGraphPrim[Data](neededPointsA, neededPointsB, distance)
+
+      biPrim.getMST
+    }
 }

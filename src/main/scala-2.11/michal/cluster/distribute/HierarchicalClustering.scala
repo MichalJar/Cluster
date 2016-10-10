@@ -1,15 +1,15 @@
 package michal.cluster.distribute
 
-import michal.cluster.algorithm.Kruskal
+import michal.cluster.algorithm.{Kruskal, Prim}
 import michal.cluster.model._
-import org.apache.spark.{SparkContext}
+import org.apache.spark.SparkContext
 
 /**
   * Created by michal on 08.10.16.
   */
 object HierarchicalClustering {
 
-  def getLinks[Data](points: Points[Data], sc: SparkContext, subGraphNum: Int): Links = {
+  def getLinks[Data](points: Points[Data], sc: SparkContext, subGraphNum: Int, distance: Dist[Data]): Links = {
 
     // inside getLinks indexes defined by user for points are replaced by internal indexes for using inside algorithms
     // new indexes are unique incrementing numbers from 0 to points.size - 1
@@ -40,8 +40,9 @@ object HierarchicalClustering {
       .partitionBy(partitioner)
 
     // compute partial MSTs for every bi-graph or full graph created from sub-graphs pointed by graph associations
+    val prim = new Prim(subGraphNum, distance)
     val partialMSTs = distributedAssociations
-      .flatMap{case (key, association) => toPartialMST(association, broadcastedAllPoints.value) }
+      .flatMap{case (key, association) => prim.toMSTFrom(association, broadcastedAllPoints.value) }
 
     val collectedMSTs = partialMSTs.collect()
 
@@ -50,17 +51,6 @@ object HierarchicalClustering {
 
     // map all indexes in computed links (internal indexes) to external user indexes
     mainMST.map(link => new Link(userIndexes(link.aId), userIndexes(link.bId), link.distance ) )
-  }
-
-  private def toPartialMST[Data](graphAssociation: GraphAssociation, allPoints: Points[Data]): Links = {
-
-    if(graphAssociation.aGraphIndex == graphAssociation.bGraphIndex){
-
-      ???
-    }
-    else{
-      ???
-    }
   }
 
 }
