@@ -1,5 +1,7 @@
 package michal.cluster
 
+import org.json4s.jackson.Serialization
+
 /**
   * Created by michal on 02.10.16.
   */

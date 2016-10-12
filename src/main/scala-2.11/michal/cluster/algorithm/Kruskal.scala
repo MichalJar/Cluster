@@ -11,7 +11,7 @@ object Kruskal {
 
 
   // indexes of point must be indexes from 0 to points.size - 1
-  def getMST[Data](links: IndexedSeq[Link], pointNum: Int): IndexedSeq[Link] = {
+  def computeMST[Data](links: IndexedSeq[Link], pointNum: Int): IndexedSeq[Link] = {
 
     val mstLinks = new Array[Link](pointNum - 1)
 

@@ -7,18 +7,19 @@ import michal.cluster.model.Points
   */
 object PointsGetter {
 
-  def getPointsBy[Data](subGraphIndex: Int, subGraphNum: Int, allPoints: Points[Data]): Points[Data] = {
-    val subGraphSize = allPoints.size / subGraphNum
+  def getPointsBy[Data](pointSetIndex: Int, setsNum: Int, allPoints: Points[Data]): Points[Data] = {
 
-    val offset = subGraphIndex * subGraphSize
+    val subSetSize = allPoints.size / setsNum
 
-    val rest = subGraphIndex % subGraphNum
+    val offset = pointSetIndex * subSetSize
 
-    val mainPoints = allPoints.slice(offset, offset + subGraphSize)
+    val rest = allPoints.size % setsNum
 
-    if(rest > subGraphIndex){
-      val additionalPointIndex = subGraphSize * subGraphNum + subGraphIndex
-      mainPoints :+ allPoints(subGraphIndex)
+    val mainPoints = allPoints.slice(offset, offset + subSetSize)
+
+    if(rest > pointSetIndex){
+      val additionalPointIndex = subSetSize * setsNum + pointSetIndex
+      mainPoints :+ allPoints(additionalPointIndex)
     }
     else mainPoints
   }

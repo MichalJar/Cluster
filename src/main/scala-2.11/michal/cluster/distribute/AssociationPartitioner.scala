@@ -1,6 +1,6 @@
 package michal.cluster.distribute
 
-import michal.cluster.model.GraphAssociation
+import michal.cluster.model.SetAssociation
 import org.apache.spark.Partitioner
 
 /**

@@ -1,13 +1,13 @@
 package michal.cluster.distribute
 
-import michal.cluster.model.GraphAssociation
+import michal.cluster.model.SetAssociation
 
 /**
   * Created by michal on 09.10.16.
   */
-class KeyGenerator(partitionNum: Int, subGraphNum: Int) {
+object KeyGenerator {
 
-  def getKeyOf(graphAssociation: GraphAssociation): Int = {
-    graphAssociation.aGraphIndex * (subGraphNum-1) - ((graphAssociation.aGraphIndex - 1)*graphAssociation.aGraphIndex) / 2 + graphAssociation.bGraphIndex
+  def getKeyOf(partitionNum: Int, setNum: Int, association: SetAssociation): Int = {
+    association.aSetIndex * (setNum-1) - ((association.aSetIndex - 1)*association.aSetIndex) / 2 + association.bSetIndex
   }
 }

@@ -5,20 +5,20 @@ import michal.cluster.model._
 /**
   * Created by michal on 02.10.16.
   */
-class Prim[Data](subGraphNum: Int, distance: Dist[Data]) {
+object Prim {
 
-  def toMSTFrom(association: GraphAssociation,  allPoints: Points[Data]): Links =
-    if(association.aGraphIndex == association.bGraphIndex){
+  def computeMST[Data](setNum: Int, association: SetAssociation, allPoints: Points[Data], distance: Dist[Data]): Links =
+    if(association.aSetIndex == association.bSetIndex){
 
-      val neededPoints = PointsGetter.getPointsBy(association.aGraphIndex, subGraphNum, allPoints)
+      val neededPoints = PointsGetter.getPointsBy(association.aSetIndex, setNum, allPoints)
 
       val fullPrim = new FullGraphPrim[Data](neededPoints, distance)
 
       fullPrim.getMST
     } else {
 
-      val neededPointsA = PointsGetter.getPointsBy(association.aGraphIndex, subGraphNum, allPoints)
-      val neededPointsB = PointsGetter.getPointsBy(association.bGraphIndex, subGraphNum, allPoints)
+      val neededPointsA = PointsGetter.getPointsBy(association.aSetIndex, setNum, allPoints)
+      val neededPointsB = PointsGetter.getPointsBy(association.bSetIndex, setNum, allPoints)
 
       val biPrim = new BiGraphPrim[Data](neededPointsA, neededPointsB, distance)
 
