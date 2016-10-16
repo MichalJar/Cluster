@@ -11,3 +11,5 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 resolvers += Resolver.mavenLocal
 
 libraryDependencies += "org.apache.spark" % "spark-core_2.11" % "2.0.0"
+
+concurrentRestrictions in Global += Tags.limit(Tags.Test, 1)

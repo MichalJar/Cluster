@@ -20,7 +20,7 @@ class HierarchicalClusteringTest extends FlatSpec {
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
 
-    val sparkConf = new SparkConf().setAppName("Test").setMaster("local")
+    val sparkConf = new SparkConf().setAppName("Test").setMaster("local[2]")
     val sc = new SparkContext(sparkConf)
 
     def thisPointsAreLinkedBy(aId: Int, bId: Int, link: Link): Boolean = {
@@ -48,10 +48,13 @@ class HierarchicalClusteringTest extends FlatSpec {
 
     val prim = new FullGraphPrim(points, distance)
 
-    val mstLinksClustering = HierarchicalClustering.computeMSTLinks(points, sc, 4, distance)
+    val mstLinksClustering = HierarchicalClustering.computeMSTLinks(points, sc, 1, distance)
 
     val mstLinksFullPrim = prim.getMST.sortBy(l => l.distance)
 
     assert( mstLinksClustering.map(l => l.distance).sum === mstLinksFullPrim.map(l => l.distance).sum )
+
+    sc.stop()
   }
+
 }

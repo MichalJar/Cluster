@@ -9,7 +9,7 @@ import org.apache.spark.SparkContext
   */
 object HierarchicalClustering {
 
-  def computeMSTLinks[Data](points: Points[Data], sc: SparkContext, setNum: Int, distance: Dist[Data]): Links = {
+  def computeMSTLinks[Data](points: Points[Data], sc: SparkContext, redistributionInequalityPercent: Double, distance: Dist[Data]): Links = {
 
     // inside getLinks indexes defined by user for points are replaced by internal indexes for using inside algorithms
     // new indexes are unique incrementing numbers from 0 to points.size - 1
@@ -17,24 +17,25 @@ object HierarchicalClustering {
 
     val userIndexes = points.map(point => point.index)
 
-    // create sub-set associations
-    val setAssociations = Array.range(0, setNum).flatMap(
-      first => Array.range(first, setNum).map(second => new SetAssociation(first, second))
-    )
-
     // get default number of partitions created in the computer cluster - for default num of partitions = num of cores
-    val partitionNum = sc.defaultParallelism
+    val coreNum = sc.defaultParallelism
+
+    // compute set num needed for full-filling redistributionInequalityPercent constraint
+    val setNum = RedistributionEquability.getSetNumFor(coreNum, redistributionInequalityPercent)
+
+    // create sub-set associations
+    val setAssociations = SetAssociation(setNum)
 
     // broadcast internal indexed points to all nodes in cluster
     // every node should has full information about data set given to clustering
     val broadcastedAllPoints = sc.broadcast(internalIndexedPoints)
 
     // create custom partitioner for equal separation of associations to partitions by key
-    val partitioner = new AssociationPartitioner(partitionNum)
+    val partitioner = new AssociationPartitioner(coreNum, setNum)
 
     // distribute graph associations throw all partitions
     val distributedAssociations = sc.parallelize(setAssociations)
-      .keyBy(association => KeyGenerator.getKeyOf(partitionNum, setNum, association))
+      .keyBy(association => association)
       .partitionBy(partitioner)
 
     // compute partial MSTs for every bi-graph or full graph created from sub-graphs pointed by graph associations
