@@ -15,11 +15,11 @@ class UnionSet(pointNum: Int) {
     val secondParent = getParent(second)
 
     val mainParent = if(range(firstParent) >= range(secondParent)) {
-      range(firstParent) = range(firstParent) + 1
+      range(firstParent) = range(firstParent) + range(secondParent)
       firstParent
     }
     else {
-      range(secondParent) = range(secondParent) + 1
+      range(secondParent) = range(secondParent) + range(firstParent)
       secondParent
     }
 

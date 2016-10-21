@@ -9,9 +9,9 @@ import org.apache.spark.SparkContext
   */
 object HierarchicalClustering {
 
-  def computeMSTLinks[Data](points: Points[Data], sc: SparkContext, redistributionInequalityPercent: Double, distance: Dist[Data]): Links = {
+  def computeLinks[Data](points: Points[Data], sc: SparkContext, redistributionInequalityPercent: Double, distance: Dist[Data]): Links = {
 
-    // inside getLinks indexes defined by user for points are replaced by internal indexes for using inside algorithms
+    // inside computeLinks indexes defined by user for points are replaced by internal indexes for using inside algorithms
     // new indexes are unique incrementing numbers from 0 to points.size - 1
     val internalIndexedPoints = points.zipWithIndex.map{case (point, index) => new Point(index, point.data)}
 

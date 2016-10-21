@@ -48,7 +48,7 @@ class HierarchicalClusteringTest extends FlatSpec {
 
     val prim = new FullGraphPrim(points, distance)
 
-    val mstLinksClustering = HierarchicalClustering.computeMSTLinks(points, sc, 1, distance)
+    val mstLinksClustering = HierarchicalClustering.computeLinks(points, sc, 1, distance)
 
     val mstLinksFullPrim = prim.getMST.sortBy(l => l.distance)
 
