@@ -30,7 +30,7 @@ class KruskalTest extends FlatSpec {
       new Link(6, 7, 12)
     )
 
-    val mst = Kruskal.computeMST( Random.shuffle(links), 8)
+    val mst = Kruskal.computeMST( Random.shuffle(links).toArray, 8)
 
     assert(mst.size === 7)
 

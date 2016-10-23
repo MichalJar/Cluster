@@ -20,6 +20,8 @@ object HierarchicalClustering {
     // get default number of partitions created in the computer cluster - for default num of partitions = num of cores
     val coreNum = sc.defaultParallelism
 
+    val distributedPartStartTime = System.currentTimeMillis()
+
     // compute set num needed for full-filling redistributionInequalityPercent constraint
     val setNum = RedistributionEquability.getSetNumFor(coreNum, redistributionInequalityPercent)
 
@@ -42,14 +44,26 @@ object HierarchicalClustering {
     //val prim = new Prim(subSetNum, distance)
     val partialMSTs = distributedAssociations
       .flatMap{case (key, association) => Prim.computeMST(setNum, association, broadcastedAllPoints.value, distance) }
+      .cache()
 
     val collectedMSTs = partialMSTs.collect()
+    val distributedComputingTime = System.currentTimeMillis() - distributedPartStartTime
+    println("APP-INFO : links are computed in time [ms]: " + distributedComputingTime)
+    println("APP-INFO : links are collected - num of generated links: " + collectedMSTs.size)
 
+    val localComputingStartTime = System.currentTimeMillis()
     // filter given links by Kruskal
-    val mainMST = Kruskal.computeMST(collectedMSTs.toIndexedSeq, points.size)
+    val mainMST = Kruskal.computeMST(collectedMSTs, points.size)
+
+    val localComputingTime = System.currentTimeMillis() - localComputingStartTime
+    println("APP-INFO : main mst is computed in time [ms]: " + localComputingTime)
 
     // map all indexes in computed links (internal indexes) to external user indexes
-    mainMST.map(link => new Link(userIndexes(link.aId), userIndexes(link.bId), link.distance ) )
+    val mstWithUserIndexes = mainMST.map(link => new Link(userIndexes(link.aId), userIndexes(link.bId), link.distance ) )
+
+    println("APP-INFO : links indexes mapped to external user indexes")
+
+    mstWithUserIndexes.toIndexedSeq
   }
 
 }
